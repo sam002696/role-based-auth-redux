@@ -1,24 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import { useSelector } from "react-redux";
+import { Route } from "react-router-dom";
+import { Switch } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
+import Login from "./pages/Authentication/Login/Login";
+import Register from "./pages/Authentication/Register/Register";
+import HeroSection from "./pages/Hero Sections/HeroSection";
+import Home from "./pages/Home/Home";
+import Incentives from "./pages/Incentives/Incentives";
 
 function App() {
+  const { currentUser } = useSelector((state) => state.user);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            {currentUser ? (
+              (currentUser.role === "Contractor" && <Home />) ||
+              (currentUser.role === "Tenant" && <HeroSection />) ||
+              (currentUser.role === "Landlord" && <Incentives />)
+            ) : (
+              <Login />
+            )}
+          </Route>
+
+          <Route path="/login">
+            <Login />
+          </Route>
+          <Route path="/register">
+            <Register />
+          </Route>
+        </Switch>
+      </Router>
+    </>
   );
 }
 
