@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   loginFailure,
   loginStart,
   loginSuccess,
 } from "../../../Redux/userSlice";
-import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { useHistory } from "react-router-dom";
 
 const Login = () => {
+  const { error, loading } = useSelector((state) => state.user);
   const history = useHistory();
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
@@ -24,11 +25,15 @@ const Login = () => {
         password,
       });
       dispatch(loginSuccess(res.data));
-      history.push("/");
-      console.log("login success", email, password);
-      //   navigate("/")
+      if (res.data?.role === "Contractor") {
+        history.push("/contractorhome");
+      } else if (res.data?.role === "Tenant") {
+        history.push("/tenanthome");
+      } else if (res.data?.role === "Landlord") {
+        history.push("/landlordhome");
+      }
     } catch (err) {
-      dispatch(loginFailure());
+      dispatch(loginFailure(err));
     }
   };
   return (
@@ -129,9 +134,17 @@ const Login = () => {
                   onClick={handleLogin}
                   className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                  Sign in
+                  {loading ? "Signing in" : "Sign in"}
                 </button>
               </div>
+
+              {error ? (
+                <div className="text-red-800 bg-red-200 font-medium px-2 py-1">
+                  {error.response?.data}
+                </div>
+              ) : (
+                ""
+              )}
             </form>
 
             <div className="mt-6">

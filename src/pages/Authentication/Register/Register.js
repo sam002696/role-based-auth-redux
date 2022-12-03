@@ -28,9 +28,8 @@ const Register = () => {
         role,
       });
       dispatch(registerSuccess(res.data));
-      history.push("/");
       console.log("register success", username, email, password, role);
-      //   navigate("/")
+      history.push("/login");
     } catch (err) {
       dispatch(registerFailure());
     }
