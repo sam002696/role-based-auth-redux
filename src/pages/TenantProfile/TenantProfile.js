@@ -4,6 +4,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "../../Redux/userSlice";
 
 const TenantProfile = () => {
+  const [passwordError, setPasswordErr] = useState("");
+  const [img, setImg] = useState(null);
+  //   const [uploadImg, setUploadImg] = useState(null);
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const [changePassword, setChangePassword] = useState(false);
@@ -14,7 +18,7 @@ const TenantProfile = () => {
     phoneNo: currentUser.phoneNo,
     userId: currentUser._id,
     dob: currentUser.dob,
-    profilePic: "",
+    profilePic: currentUser.profilePic,
     password: currentUser.password,
     confirmPassword: currentUser.confirmPassword,
     gender: currentUser.gender,
@@ -35,6 +39,14 @@ const TenantProfile = () => {
     setChangePassword(true);
   };
 
+  const handleImg = (e) => {
+    // setImg(e.target.files[0]);
+    setImg(URL.createObjectURL(e.target.files[0]));
+    // setUploadImg(e.target.files[0].name);
+    const uploadPic = e.target.files[0].name;
+    setFormList({ ...formList, profilePic: uploadPic });
+  };
+
   const handleSaveAndUpdateButton = async (e) => {
     e.preventDefault();
     try {
@@ -51,6 +63,41 @@ const TenantProfile = () => {
       console.log(err);
     }
     console.log(formList);
+  };
+
+  // validation for password and confirm password
+
+  const handleValidation = (evnt) => {
+    const passwordInputValue = evnt.target.value.trim();
+    const passwordInputFieldName = evnt.target.name;
+    //for password
+    if (passwordInputFieldName === "password") {
+      const minLengthRegExp = /.{8,}/;
+      const passwordLength = passwordInputValue.length;
+
+      const minLengthPassword = minLengthRegExp.test(passwordInputValue);
+      let errMsg = "";
+      if (passwordLength === 0) {
+        errMsg = "Password is empty";
+      } else if (!minLengthPassword) {
+        errMsg = "At least minumum 8 characters";
+      } else {
+        errMsg = "";
+      }
+      setPasswordErr(errMsg);
+    }
+    // for confirm password
+    if (
+      passwordInputFieldName === "confirmPassword" ||
+      (passwordInputFieldName === "password" &&
+        formList.confirmPassword.length > 0)
+    ) {
+      if (formList.confirmPassword !== formList.password) {
+        setConfirmPasswordError("Confirm password is not matched");
+      } else {
+        setConfirmPasswordError("");
+      }
+    }
   };
 
   return (
@@ -95,26 +142,43 @@ const TenantProfile = () => {
                     </p>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                  <div className=" flex items-center">
+                    <label className="block text-sm font-medium text-gray-700 sr-only">
                       Photo
                     </label>
+
                     <div className="mt-1 flex items-center space-x-5">
-                      <span className="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100">
-                        <svg
-                          className="h-full w-full text-gray-300"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                      </span>
-                      <button
-                        type="button"
-                        className="rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                      <span
+                        className={`inline-block h-12 w-12 overflow-hidden rounded-full ${
+                          img ? "bg-white border" : "bg-gray-100"
+                        }`}
                       >
-                        Change
-                      </button>
+                        {img ? (
+                          <img className=" w-full h-full" src={img} alt="" />
+                        ) : (
+                          <svg
+                            className="h-full w-full text-gray-300"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                          </svg>
+                        )}
+                      </span>
+
+                      <label htmlFor="dropzone-file-data-one">
+                        <div className="rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
+                          Change
+                        </div>
+
+                        <input
+                          id="dropzone-file-data-one"
+                          style={{ display: "none" }}
+                          type="file"
+                          onChange={(e) => handleImg(e)}
+                          accept="image/*"
+                        />
+                      </label>
                     </div>
                   </div>
                 </div>
@@ -147,6 +211,9 @@ const TenantProfile = () => {
                         autoComplete="given-name"
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
                         defaultValue={currentUser.username}
+                        onChange={(e) => {
+                          handleFormChange(e);
+                        }}
                       />
                     </div>
 
@@ -165,6 +232,9 @@ const TenantProfile = () => {
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
                         readOnly
                         defaultValue={currentUser.email}
+                        onChange={(e) => {
+                          handleFormChange(e);
+                        }}
                       />
                     </div>
 
@@ -182,6 +252,9 @@ const TenantProfile = () => {
                         autoComplete="telephone"
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
                         defaultValue={currentUser.phoneNo}
+                        onChange={(e) => {
+                          handleFormChange(e);
+                        }}
                       />
                     </div>
 
@@ -196,6 +269,8 @@ const TenantProfile = () => {
                         type="password"
                         name="password"
                         id="password"
+                        placeholder="********"
+                        readOnly
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
                       />
                     </div>
@@ -225,11 +300,13 @@ const TenantProfile = () => {
                         type="password"
                         name="password"
                         id="password"
+                        onKeyUp={handleValidation}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
                         onChange={(e) => {
                           handleFormChange(e);
                         }}
                       />
+                      <p className="text-red-500">{passwordError}</p>
                     </div>
 
                     <div
@@ -247,11 +324,13 @@ const TenantProfile = () => {
                         type="password"
                         name="confirmPassword"
                         id="confirmPassword"
+                        onKeyUp={handleValidation}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
                         onChange={(e) => {
                           handleFormChange(e);
                         }}
                       />
+                      <p className="text-red-500">{confirmPasswordError}</p>
                     </div>
 
                     <div className="col-span-6 sm:col-span-4">

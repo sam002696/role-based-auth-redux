@@ -212,10 +212,16 @@ const PricingHeader = () => {
                 Profile
               </Link>
               <Link
-                to="#"
+                to="/addproperty"
                 className="text-base font-medium text-gray-500 hover:text-gray-900"
               >
-                Docs
+                Add a property
+              </Link>
+              <Link
+                to="/propertyviewing"
+                className="text-base font-medium text-gray-500 hover:text-gray-900"
+              >
+                Property Viewing
               </Link>
 
               <Popover className="relative">

@@ -2,12 +2,14 @@ import { useSelector } from "react-redux";
 import { Route } from "react-router-dom";
 import { Switch } from "react-router-dom";
 import { BrowserRouter as Router } from "react-router-dom";
+import AddProperty from "./pages/AddProperty/AddProperty";
 import Login from "./pages/Authentication/Login/Login";
 import Register from "./pages/Authentication/Register/Register";
 import HeroSection from "./pages/Hero Sections/HeroSection";
 import Home from "./pages/Home/Home";
 import HomeTwo from "./pages/Home/HomeTwo";
 import Incentives from "./pages/Incentives/Incentives";
+import ArrangePropertyViewing from "./pages/Prospects/ArrangePropertyViewing/ArrangePropertyViewing";
 import TenantProfile from "./pages/TenantProfile/TenantProfile";
 
 function App() {
@@ -49,6 +51,13 @@ function App() {
           </Route>
           <Route path="/register">
             <Register />
+          </Route>
+
+          <Route path="/propertyviewing">
+            <ArrangePropertyViewing />
+          </Route>
+          <Route path="/addproperty">
+            <AddProperty />
           </Route>
         </Switch>
       </Router>

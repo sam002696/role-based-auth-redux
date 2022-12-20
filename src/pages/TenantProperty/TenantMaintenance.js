@@ -2,10 +2,6 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
-  //   TicketIcon,
-  //   LockOpenIcon,
-  //   FlagIcon,
-  //   AcademicCapIcon,
   TrashIcon,
   EyeIcon,
   UserIcon,
@@ -83,6 +79,7 @@ const TenantMaintenance = () => {
     return classes.filter(Boolean).join(" ");
   }
   console.log(tenantReports);
+  console.log(timeline);
   return (
     <>
       <div className="mx-auto max-w-7xl my-8">
@@ -163,7 +160,7 @@ const TenantMaintenance = () => {
                 </div>
                 <div className="flow-root">
                   <ul className="-mb-8">
-                    {timeline.map((event, eventIdx) => (
+                    {timeline.filter(Boolean).map((event, eventIdx) => (
                       <li key={event.id}>
                         <div className="relative pb-8">
                           {eventIdx !== timeline.length - 1 ? (
